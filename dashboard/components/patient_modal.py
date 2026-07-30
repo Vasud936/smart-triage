@@ -16,13 +16,7 @@ def render_patient_modal(patient=None):
         st.session_state[f"{prefix}dbp"] = float(patient["vitals"]["DBP"]) if is_edit else 80.0
     
     name = st.text_input("Patient Name", value=patient["name"] if is_edit else "", placeholder="e.g. John Doe")
-    age = st.number_input("Age", min_value=0, max_value=120, value=int(patient["age"]) if is_edit else 45)
-    
-    sex_options = ["Male", "Female"]
-    default_sex_idx = sex_options.index(patient["sex"]) if is_edit else 0
-    sex = st.selectbox("Sex", sex_options, index=default_sex_idx)
-    
-    complaint = st.text_input("Chief Complaint", value=patient["complaint"] if is_edit else "", placeholder="e.g. Chest Pain")
+
     
     st.markdown("---")
     st.markdown("**Vitals**")
@@ -57,20 +51,33 @@ def render_patient_modal(patient=None):
                     st.session_state[f"{prefix}dbp"] = float(features['dbp_estimated'])
                     st.toast("✅ Vitals captured and filled successfully!", icon="✅")
                     time.sleep(0.5)
-                    st.rerun()
+                    # Removed st.rerun() here to prevent the dialog from closing prematurely!
                 else:
                     st.error("Could not detect face or pulse. Please ensure you are in a well-lit area and looking at the camera.")
     
-    # Vitals Inputs
+    # Vitals Inputs (Auto-fillable)
     col1, col2 = st.columns(2)
     with col1:
         hr = st.number_input("Heart Rate", key=f"{prefix}hr", format="%.1f")
         sbp = st.number_input("Systolic BP", key=f"{prefix}sbp", format="%.1f")
-        bt = st.number_input("Temp (C)", value=float(patient["vitals"]["BT"]) if is_edit else 37.0, format="%.1f")
     with col2:
-        rr = st.number_input("Resp Rate", value=float(patient["vitals"]["RR"]) if is_edit else 16.0, format="%.1f")
-        dbp = st.number_input("Diastolic BP", key=f"{prefix}dbp", format="%.1f")
         spo2 = st.number_input("SpO2 (%)", value=float(patient["vitals"]["Saturation"]) if is_edit else 98.0, format="%.1f")
+        dbp = st.number_input("Diastolic BP", key=f"{prefix}dbp", format="%.1f")
+        
+    st.markdown("---")
+    st.markdown("**Other Information (Manual)**")
+    
+    col3, col4 = st.columns(2)
+    with col3:
+        age = st.number_input("Age", min_value=0, max_value=120, value=int(patient["age"]) if is_edit else 45)
+        bt = st.number_input("Temp (C)", value=float(patient["vitals"]["BT"]) if is_edit else 37.0, format="%.1f")
+    with col4:
+        sex_options = ["Male", "Female"]
+        default_sex_idx = sex_options.index(patient["sex"]) if is_edit else 0
+        sex = st.selectbox("Sex", sex_options, index=default_sex_idx)
+        rr = st.number_input("Resp Rate", value=float(patient["vitals"]["RR"]) if is_edit else 16.0, format="%.1f")
+        
+    complaint = st.text_input("Chief Complaint", value=patient["complaint"] if is_edit else "", placeholder="e.g. Chest Pain")
         
     if st.button("Save Patient Profile", type="primary", use_container_width=True):
         if not name:
