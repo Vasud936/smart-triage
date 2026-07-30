@@ -93,21 +93,28 @@ def render_live_monitor_modal(patient):
                     st.metric("❤️ Heart Rate",     f"{hr:.1f} BPM")
                     st.metric("🩸 Blood Pressure",  f"{int(sbp)}/{int(dbp)}")
                     st.metric("🫁 SpO2 (Est.)",     f"{int(patient['vitals']['Saturation'])}%")
-                    st.markdown(
-                        f"**Risk Tier:** <span style='color:{color};font-size:1.3em;font-weight:bold'>● {risk}</span>",
-                        unsafe_allow_html=True,
-                    )
+                    # Determine badge class based on risk tier
+                    badge_class = "badge-stable"
+                    if risk == "Re-triage": badge_class = "badge-retriage"
+                    elif risk == "Monitor": badge_class = "badge-monitor"
+                    
+                    st.markdown(f"""
+                    <div style="margin: 20px 0; padding: 16px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);">
+                        <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">Current Risk Tier</div>
+                        <span class="{badge_class}" style="font-size: 1rem; padding: 6px 14px;">● {risk}</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
                     if pred.get("shap_explanation"):
-                        st.markdown("---")
-                        st.markdown("**🔍 Flagged Factors:**")
+                        st.markdown("**🔍 AI Insights**", unsafe_allow_html=True)
                         for k, v in pred["shap_explanation"].items():
                             val = f"{v:.2f}" if isinstance(v, (int, float)) else str(v)
-                            st.markdown(f"- **{k}:** `{val}`")
+                            st.markdown(f"<div style='font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 4px;'>• {k}: <span style='color: var(--text-primary);'>{val}</span></div>", unsafe_allow_html=True)
                 else:
-                    st.metric("❤️ Heart Rate",    "Initializing…")
+                    st.markdown("<div style='margin-bottom:1rem;color:var(--text-secondary);'>Initializing sensors...</div>", unsafe_allow_html=True)
+                    st.metric("❤️ Heart Rate",    "--")
                     st.metric("🩸 Blood Pressure", "--")
                     st.metric("🫁 SpO2 (Est.)",    "--")
-                    st.info("Signal building up, please wait ~3 seconds…")
 
             with graph_placeholder.container():
                 st.markdown("#### Heart Rate Trend")

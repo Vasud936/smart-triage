@@ -52,8 +52,19 @@ def main():
         return
         
     # Navigation
-    st.title("VitalWatch ER — AI Triage Monitor")
-    st.sidebar.title("VitalWatch Navigation")
+    st.markdown("""
+        <div style="padding: 0.5rem 0 2rem 0;">
+            <h1 style="margin-bottom: 0; font-size: 2.5rem; letter-spacing: -0.04em;">VitalWatch ER</h1>
+            <p style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 4px;">AI-Powered Triage & Patient Monitoring</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.sidebar.markdown("""
+        <div style="padding-bottom: 1.5rem;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 0; letter-spacing: -0.03em;">VitalWatch</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 2px;">Emergency Department</p>
+        </div>
+    """, unsafe_allow_html=True)
     page = st.sidebar.radio("Go to:", ["Patient Queue", "Model Insights"])
     
     st.sidebar.markdown("---")
