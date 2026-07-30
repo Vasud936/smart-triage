@@ -36,7 +36,6 @@ class RPPGPipeline:
         # HR tracking
         self.current_hr = None
         self.baseline_hr = None
-        self.hr_raw_buffer = deque(maxlen=self.fps * 5)  # 5-second window for smoothing
         self.hr_history = deque(maxlen=60)  # 60 seconds of history for the graph
         self.last_history_update = 0.0
         self.quality = "Poor"
@@ -170,19 +169,19 @@ class RPPGPipeline:
         
         if snr > 0.3:
             self.quality = "Good"
-            self.hr_raw_buffer.append(hr_bpm)
             
-            # Apply median filtering over the 5-second buffer for stable reading
-            stable_hr = np.median(self.hr_raw_buffer)
-            self.current_hr = stable_hr
-            
-            if self.baseline_hr is None:
-                self.baseline_hr = stable_hr
+            if self.current_hr is None:
+                self.current_hr = hr_bpm
+                self.baseline_hr = hr_bpm
+            else:
+                # Real-time Exponential Moving Average (EMA)
+                # alpha=0.1 at 30 FPS means smooth, continuous real-time sliding
+                self.current_hr = (0.1 * hr_bpm) + (0.9 * self.current_hr)
                 
             # Update history only once per second so the UI graph scales correctly (1 point = 1 sec)
             current_time = time.time()
             if current_time - self.last_history_update >= 1.0:
-                self.hr_history.append(stable_hr)
+                self.hr_history.append(self.current_hr)
                 self.last_history_update = current_time
         else:
             self.quality = "Poor"
