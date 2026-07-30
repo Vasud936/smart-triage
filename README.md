@@ -1,6 +1,6 @@
 # VitalWatch ER AI-Powered Emergency Triage Monitor
 
-> **Hackathon Project** — Contactless patient monitoring meets machine learning for smarter emergency department triage.
+> **Hackathon Project** : Contactless patient monitoring meets machine learning for smarter emergency department triage.
 
 ## What is VitalWatch ER?
 
