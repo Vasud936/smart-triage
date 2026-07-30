@@ -20,9 +20,10 @@ def render_live_monitor_modal(patient):
     if not rppg.running:
         rppg.start()
 
-    # Single @st.fragment refreshes the entire modal body every 1 second.
-    # This covers: video frame, vitals metrics, HR graph — all in one pass.
-    @st.fragment(run_every=1)
+    # Single @st.fragment refreshes the entire modal body every 0.2 seconds (5 FPS).
+    # This is the maximum safe limit before Streamlit's HTTP server drops frames (404s)
+    # or freezes the browser's React DOM.
+    @st.fragment(run_every=0.2)
     def _monitor():
         _rppg = st.session_state.rppg
         features = _rppg.get_feature_vector()
