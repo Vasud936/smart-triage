@@ -36,7 +36,9 @@ class RPPGPipeline:
         # HR tracking
         self.current_hr = None
         self.baseline_hr = None
-        self.hr_history = deque(maxlen=50)
+        self.hr_raw_buffer = deque(maxlen=self.fps * 5)  # 5-second window for smoothing
+        self.hr_history = deque(maxlen=60)  # 60 seconds of history for the graph
+        self.last_history_update = 0.0
         self.quality = "Poor"
         
         # Thread control
@@ -55,6 +57,9 @@ class RPPGPipeline:
         self.cap = cv2.VideoCapture(0)
         if not self.cap.isOpened():
             raise RuntimeError("Could not open webcam.")
+        
+        # Try to enforce 30 FPS at hardware level
+        self.cap.set(cv2.CAP_PROP_FPS, self.fps)
             
         self.running = True
         self.thread = threading.Thread(target=self._run_loop, daemon=True)
@@ -71,7 +76,9 @@ class RPPGPipeline:
 
     def _run_loop(self):
         """Main capture and processing loop."""
+        target_frame_time = 1.0 / self.fps
         while self.running:
+            start_time = time.time()
             ret, frame = self.cap.read()
             if not ret:
                 time.sleep(0.01)
@@ -116,7 +123,11 @@ class RPPGPipeline:
             
             # Save frame for UI
             self.latest_frame = frame_rgb
-            time.sleep(1.0 / self.fps)
+            
+            # Enforce 30 FPS software limit if processing was fast
+            elapsed = time.time() - start_time
+            sleep_time = max(0, target_frame_time - elapsed)
+            time.sleep(sleep_time)
 
     def _process_signal(self):
         """Processes the buffer to estimate HR."""
@@ -162,10 +173,20 @@ class RPPGPipeline:
         
         if snr > 0.3:
             self.quality = "Good"
-            self.current_hr = hr_bpm
-            self.hr_history.append(hr_bpm)
+            self.hr_raw_buffer.append(hr_bpm)
+            
+            # Apply median filtering over the 5-second buffer for stable reading
+            stable_hr = np.median(self.hr_raw_buffer)
+            self.current_hr = stable_hr
+            
             if self.baseline_hr is None:
-                self.baseline_hr = hr_bpm
+                self.baseline_hr = stable_hr
+                
+            # Update history only once per second so the UI graph scales correctly (1 point = 1 sec)
+            current_time = time.time()
+            if current_time - self.last_history_update >= 1.0:
+                self.hr_history.append(stable_hr)
+                self.last_history_update = current_time
         else:
             self.quality = "Poor"
 
@@ -216,7 +237,7 @@ class SimulatedRPPG:
         self.running = False
         self.baseline_hr = base_hr
         self.history = deque(maxlen=10)
-        self.hr_history = deque(maxlen=50)  # Longer history for graph rendering
+        self.hr_history = deque(maxlen=60)  # Longer history for graph rendering
         self.thread = None
         self.latest_frame = None
 
