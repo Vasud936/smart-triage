@@ -38,10 +38,8 @@ def render_patient_queue():
             with col3:
                 st.markdown(f"<div style='text-align: right; margin-bottom: 10px;'><span style='color:{p['color']}; font-weight:bold; font-size:1.2em;'>● {p['risk_tier']}</span></div>", unsafe_allow_html=True)
                 
-                b1, b2 = st.columns(2)
-                with b1:
-                    if st.button("👁 Monitor", key=f"mon_{p['id']}", use_container_width=True):
-                        render_live_monitor_modal(p)
-                with b2:
-                    if st.button("✏️ Edit", key=f"edit_{p['id']}", use_container_width=True):
-                        render_patient_modal(patient=p)
+                # Stack buttons vertically so they have full container width
+                if st.button("👁 Monitor", key=f"mon_{p['id']}", use_container_width=True):
+                    render_live_monitor_modal(p)
+                if st.button("✏️ Edit", key=f"edit_{p['id']}", use_container_width=True):
+                    render_patient_modal(patient=p)
