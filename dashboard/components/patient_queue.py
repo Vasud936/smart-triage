@@ -28,7 +28,7 @@ def render_patient_queue():
     # Render patient cards
     for p in sorted_patients:
         with st.container(border=True):
-            col1, col2, col3 = st.columns([1.5, 2.5, 1.5])
+            col1, col2, col3 = st.columns([1.2, 2.3, 2.0])
             with col1:
                 st.markdown(f"#### {p['name']}")
                 st.markdown(f"**ID:** {p['id']} &nbsp;|&nbsp; **{int(p['age'])} {p['sex'][0]}**")
