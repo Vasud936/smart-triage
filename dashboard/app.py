@@ -7,10 +7,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from dashboard.components.consent_screen import render_consent
 from dashboard.components.webcam_feed import render_webcam
-from dashboard.components.patient_queue import render_patient_queue
 from dashboard.components.explanation_panel import render_explanation
 from dashboard.components.hr_trend_chart import render_hr_trend
-from dashboard.components.add_patient import render_add_patient
+from dashboard.components.patient_queue import render_patient_queue
 
 import time
 from src.rppg_pipeline import RPPGPipeline, SimulatedRPPG
@@ -52,14 +51,12 @@ def main():
         render_consent()
         return
         
+    # Navigation
     st.title("VitalWatch ER — AI Triage Monitor")
+    st.sidebar.title("VitalWatch Navigation")
+    page = st.sidebar.radio("Go to:", ["Patient Queue", "Live Monitor", "Model Insights"])
     
-    # Sidebar
-    st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", ["Patient Queue", "Live Monitor", "Model Insights"])
-    
-    render_add_patient()
-    
+    st.sidebar.markdown("---")
     demo_mode = st.sidebar.toggle("Demo Mode (Simulated Data)", value=True)
     
     if st.session_state.rppg is None or getattr(st.session_state.rppg, 'is_demo', not demo_mode) != demo_mode:
