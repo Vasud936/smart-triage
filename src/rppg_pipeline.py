@@ -139,8 +139,9 @@ class RPPGPipeline:
             return
             
         # Signal quality check (e.g., too many static/zero values if face lost)
+        # Because the signal is now a G/R ratio around 1.0, the standard deviation is very small.
         signal = np.array(self.green_signal)
-        if np.std(signal) < 1.0:
+        if np.std(signal) < 0.0001:
             self.quality = "Poor"
             return
             
