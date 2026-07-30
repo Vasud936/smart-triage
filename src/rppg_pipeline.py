@@ -12,7 +12,7 @@ class RPPGPipeline:
     Real-time rPPG pipeline using OpenCV, MediaPipe Face Mesh, and SciPy.
     Runs in a background thread.
     """
-    def __init__(self, fps=30, buffer_seconds=10):
+    def __init__(self, fps=30, buffer_seconds=6):
         self.fps = fps
         self.buffer_size = fps * buffer_seconds
         
@@ -94,13 +94,17 @@ class RPPGPipeline:
                     pt = landmarks.landmark[idx]
                     forehead_pts.append((int(pt.x * w), int(pt.y * h)))
                 
-                # Create mask and extract mean green channel
+                # Create mask and extract mean channels
                 mask = np.zeros(frame.shape[:2], dtype=np.uint8)
                 cv2.fillConvexPoly(mask, np.array(forehead_pts), 255)
                 mean_val = cv2.mean(frame_rgb, mask=mask)
-                green_val = mean_val[1]
+                r_val = mean_val[0]
+                g_val = mean_val[1]
                 
-                self.green_signal.append(green_val)
+                # Normalize Green with Red to cancel out distance and lighting artifacts
+                val = (g_val / r_val) if r_val > 1.0 else g_val
+                
+                self.green_signal.append(val)
                 self.timestamps.append(time.time())
                 face_detected = True
                 
@@ -167,7 +171,7 @@ class RPPGPipeline:
         total_power = np.sum(fft_mag[valid_idx]**2)
         snr = peak_power / total_power if total_power > 0 else 0
         
-        if snr > 0.3:
+        if snr > 0.25:
             self.quality = "Good"
             
             if self.current_hr is None:
