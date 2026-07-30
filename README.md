@@ -2,7 +2,7 @@
 
 > **Hackathon Project** — Contactless patient monitoring meets machine learning for smarter emergency department triage.
 
-## 🏥 What is VitalWatch ER?
+## What is VitalWatch ER?
 
 VitalWatch ER is an AI-powered prototype that combines **remote photoplethysmography (rPPG)** with a **machine learning risk classifier** to continuously monitor emergency department patients through a standard webcam — no wearable sensors required.
 
@@ -12,7 +12,7 @@ The system:
 3. **Explains its reasoning** via SHAP feature importance ("flagged because HR elevated + respiratory rate abnormal")
 4. **Displays everything** in a real-time Streamlit dashboard with patient queue, trend charts, and alerts
 
-## 📊 Key Results
+## Key Results
 
 | Metric | Benchmark (Prior Work) | Our Model |
 |--------|----------------------|-----------|
@@ -22,7 +22,7 @@ The system:
 
 *Benchmark source: [suadism/CapstoneSuadMohammed](https://github.com/suadism/CapstoneSuadMohammed)*
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Tool | Purpose |
 |-------|------|---------|
@@ -38,7 +38,7 @@ The system:
 
 **No API keys. No cloud services. No cost.**
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── data/
@@ -73,7 +73,7 @@ The system:
 └── run.bat                        # One-click launcher
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Install dependencies
 ```bash
@@ -96,7 +96,7 @@ Or use the one-click launcher:
 run.bat
 ```
 
-## 👥 Team Division
+## Team Division
 
 | Person | Phase | Responsibility |
 |--------|-------|---------------|
@@ -105,7 +105,7 @@ run.bat
 | Person C | Phase 3+4 | Integration + Streamlit dashboard |
 | Everyone | Phase 5 | Validation + demo rehearsal |
 
-## 📚 References
+## References
 
 - **Dataset**: Korean Emergency Department Triage Dataset (KTAS), 1,267 patients from two EDs in South Korea (Oct 2016 – Sep 2017)
   - [Kaggle](https://www.kaggle.com/datasets/ilkeryildiz/emergency-service-triage-application)
@@ -114,7 +114,7 @@ run.bat
 - **Benchmark**: [suadism/CapstoneSuadMohammed](https://github.com/suadism/CapstoneSuadMohammed) — Gradient Boosting achieved 80% accuracy, 89% emergency recall
 - **rPPG methodology**: Poh, M.Z., McDuff, D.J., & Picard, R.W. (2011). "Advancements in noncontact, multiparameter physiological measurements using a webcam."
 
-## ⚖️ Ethical Considerations
+## Ethical Considerations
 
 - **This is a research prototype, NOT for clinical use**
 - All patient data is de-identified
