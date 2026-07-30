@@ -120,7 +120,10 @@ class RPPGPipeline:
 
     def _process_signal(self):
         """Processes the buffer to estimate HR."""
-        if len(self.green_signal) < self.buffer_size:
+        # Start estimating after just 3 seconds for faster UI feedback, 
+        # while the buffer continues growing to 10s for maximum accuracy.
+        min_frames = self.fps * 3
+        if len(self.green_signal) < min_frames:
             self.quality = "Initializing"
             return
             

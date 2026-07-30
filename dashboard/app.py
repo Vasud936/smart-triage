@@ -10,6 +10,7 @@ from dashboard.components.webcam_feed import render_webcam
 from dashboard.components.patient_queue import render_patient_queue
 from dashboard.components.explanation_panel import render_explanation
 from dashboard.components.hr_trend_chart import render_hr_trend
+from dashboard.components.add_patient import render_add_patient
 
 import time
 from src.rppg_pipeline import RPPGPipeline, SimulatedRPPG
@@ -34,8 +35,11 @@ def init_pipelines():
         st.session_state.predictor = TriagePredictor(
             models_dir=Path(__file__).parent.parent / "models"
         )
-    if "rppg" not in st.session_state:
         st.session_state.rppg = None
+    if "patients" not in st.session_state:
+        st.session_state.patients = []
+    if "monitored_patient_id" not in st.session_state:
+        st.session_state.monitored_patient_id = None
 
 def main():
     load_css()
@@ -52,7 +56,9 @@ def main():
     
     # Sidebar
     st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", ["Live Monitor", "Patient Queue", "Model Insights"])
+    page = st.sidebar.radio("Go to", ["Patient Queue", "Live Monitor", "Model Insights"])
+    
+    render_add_patient()
     
     demo_mode = st.sidebar.toggle("Demo Mode (Simulated Data)", value=True)
     
@@ -68,9 +74,19 @@ def main():
         st.session_state.rppg.start()
 
     if page == "Live Monitor":
+        monitored_id = st.session_state.monitored_patient_id
+        if not monitored_id:
+            st.info("No patient selected for monitoring. Please select a patient from the Queue.")
+            return
+            
+        patient = next((p for p in st.session_state.patients if p["id"] == monitored_id), None)
+        if not patient:
+            st.error("Selected patient not found.")
+            return
+
         col1, col2 = st.columns([2, 1])
         with col1:
-            st.markdown("### Live Patient Feed")
+            st.markdown(f"### Live Patient Feed: {patient['name']} ({patient['id']})")
             cam_placeholder = st.empty()
             render_hr_trend()
             
@@ -92,9 +108,15 @@ def main():
             
             # Predict
             if hr is not None:
-                prediction = st.session_state.predictor.predict(features)
+                # Merge live rPPG with static profile
+                prediction = st.session_state.predictor.predict(features, patient_profile=patient["vitals"])
                 risk_tier = prediction['risk_tier']
                 color = prediction['color_code']
+                
+                # Update global queue if it changed
+                if patient["risk_tier"] != risk_tier:
+                    patient["risk_tier"] = risk_tier
+                    patient["color"] = color
                 
                 hr_metric.metric("Heart Rate", f"{hr:.1f} BPM" if hr else "--")
                 bp_metric.metric("Est. Blood Pressure", f"{int(sbp)}/{int(dbp)}" if sbp else "--")
