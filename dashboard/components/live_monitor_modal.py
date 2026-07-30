@@ -65,12 +65,7 @@ def render_live_monitor_modal(patient):
         else:
             frame = getattr(rppg, 'latest_frame', None)
             if frame is not None:
-                # Passing raw bytes to st.image forces an immediate render and reduces 404s
-                import cv2
-                frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-                ret, buffer = cv2.imencode('.jpg', frame_bgr)
-                if ret:
-                    video_placeholder.image(buffer.tobytes(), format='image/jpeg', use_container_width=True)
+                video_placeholder.image(frame, channels="RGB", use_container_width=True)
             else:
                 video_placeholder.info("⏳ Camera initializing… please wait 2-3 seconds.")
 
