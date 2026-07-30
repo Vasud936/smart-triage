@@ -40,8 +40,7 @@ def render_patient_queue():
                 b1, b2 = st.columns(2)
                 with b1:
                     if st.button("👁 Monitor", key=f"mon_{p['id']}", use_container_width=True):
-                        st.session_state.monitored_patient_id = p['id']
-                        st.rerun()
+                        render_live_monitor_modal(p)
                 with b2:
                     if st.button("✏️ Edit", key=f"edit_{p['id']}", use_container_width=True):
                         render_patient_modal(patient=p)
