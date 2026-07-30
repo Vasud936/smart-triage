@@ -131,7 +131,7 @@ def render_live_monitor_modal(patient):
                     xaxis=dict(title="Seconds elapsed", showgrid=False, zeroline=False),
                     showlegend=False,
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True, key=f"hr_trend_chart_{loop_count}")
 
         loop_count += 1
         time.sleep(0.2)
