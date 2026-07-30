@@ -36,7 +36,7 @@ class RPPGPipeline:
         # HR tracking
         self.current_hr = None
         self.baseline_hr = None
-        self.hr_history = deque(maxlen=10)
+        self.hr_history = deque(maxlen=50)
         self.quality = "Poor"
         
         # Thread control
@@ -216,7 +216,9 @@ class SimulatedRPPG:
         self.running = False
         self.baseline_hr = base_hr
         self.history = deque(maxlen=10)
+        self.hr_history = deque(maxlen=50)  # Longer history for graph rendering
         self.thread = None
+        self.latest_frame = None
 
     def start(self):
         self.running = True
@@ -233,6 +235,7 @@ class SimulatedRPPG:
             # Random walk
             self.current_hr += random.uniform(-1.0, 1.0)
             self.history.append(self.current_hr)
+            self.hr_history.append(self.current_hr)
             time.sleep(1)
 
     def get_current_hr(self):

@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 
 from dashboard.components.patient_modal import render_patient_modal
+from dashboard.components.live_monitor_modal import render_live_monitor_modal
 
 def render_patient_queue():
     head_col1, head_col2 = st.columns([3, 1])
