@@ -15,34 +15,6 @@ def render_patient_modal(patient=None):
         st.session_state[f"{prefix}sbp"] = float(patient["vitals"]["SBP"]) if is_edit else 120.0
         st.session_state[f"{prefix}dbp"] = float(patient["vitals"]["DBP"]) if is_edit else 80.0
     
-    st.info("You can input vitals manually, or use the camera to extract them live.")
-    
-    if st.button("📸 Auto-Fill Vitals via Live Camera", use_container_width=True):
-        with st.spinner("Initializing camera & reading face... (Wait 3 seconds)"):
-            rppg = st.session_state.rppg
-            was_running = rppg.running
-            if not was_running:
-                rppg.start()
-            
-            # Wait for buffer to gather 3s of data
-            time.sleep(3.5)
-            features = rppg.get_feature_vector()
-            
-            if not was_running:
-                rppg.stop()
-                
-            if features.get('hr_bpm'):
-                st.session_state[f"{prefix}hr"] = float(features['hr_bpm'])
-                st.session_state[f"{prefix}sbp"] = float(features['sbp_estimated'])
-                st.session_state[f"{prefix}dbp"] = float(features['dbp_estimated'])
-                st.success("Vitals captured successfully!")
-                time.sleep(1)
-                st.rerun()
-            else:
-                st.error("Could not detect face or pulse. Please input manually.")
-    
-    st.markdown("---")
-    
     name = st.text_input("Patient Name", value=patient["name"] if is_edit else "", placeholder="e.g. John Doe")
     age = st.number_input("Age", min_value=0, max_value=120, value=int(patient["age"]) if is_edit else 45)
     
@@ -52,7 +24,44 @@ def render_patient_modal(patient=None):
     
     complaint = st.text_input("Chief Complaint", value=patient["complaint"] if is_edit else "", placeholder="e.g. Chest Pain")
     
+    st.markdown("---")
     st.markdown("**Vitals**")
+    st.info("You can input vitals manually, or use the camera to extract them live.")
+    
+    if st.button("📸 Auto-Fill Vitals via Live Camera", use_container_width=True):
+        if not name.strip():
+            st.warning("⚠️ Please fill the Patient Name first before scanning vitals.")
+        else:
+            with st.spinner("Initializing camera & reading face... (Please hold still for ~4 seconds)"):
+                rppg = st.session_state.rppg
+                was_running = rppg.running
+                if not was_running:
+                    rppg.start()
+                
+                # Poll for valid readings up to 5 seconds
+                success = False
+                features = {}
+                for _ in range(10):
+                    time.sleep(0.5)
+                    features = rppg.get_feature_vector()
+                    if features.get('hr_bpm') is not None:
+                        success = True
+                        break
+                
+                if not was_running:
+                    rppg.stop()
+                    
+                if success:
+                    st.session_state[f"{prefix}hr"] = float(features['hr_bpm'])
+                    st.session_state[f"{prefix}sbp"] = float(features['sbp_estimated'])
+                    st.session_state[f"{prefix}dbp"] = float(features['dbp_estimated'])
+                    st.toast("✅ Vitals captured and filled successfully!", icon="✅")
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.error("Could not detect face or pulse. Please ensure you are in a well-lit area and looking at the camera.")
+    
+    # Vitals Inputs
     col1, col2 = st.columns(2)
     with col1:
         hr = st.number_input("Heart Rate", key=f"{prefix}hr", format="%.1f")
