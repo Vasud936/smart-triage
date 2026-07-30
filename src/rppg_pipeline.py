@@ -57,9 +57,6 @@ class RPPGPipeline:
         self.cap = cv2.VideoCapture(0)
         if not self.cap.isOpened():
             raise RuntimeError("Could not open webcam.")
-        
-        # Try to enforce 30 FPS at hardware level
-        self.cap.set(cv2.CAP_PROP_FPS, self.fps)
             
         self.running = True
         self.thread = threading.Thread(target=self._run_loop, daemon=True)
