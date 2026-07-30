@@ -44,24 +44,57 @@ def render_live_monitor_modal(patient):
                 unsafe_allow_html=True
             )
         else:
-            # Real Streamlit camera widget — works natively in browser
+            # Raw JS camera — works inside st.dialog where st.camera_input is sandboxed
             st.markdown("**Live Webcam Feed (rPPG Analysis Active)**")
-            cam_frame = st.camera_input(
-                label="Patient Camera",
-                label_visibility="collapsed",
-                key=f"cam_{patient['id']}"
+            import streamlit.components.v1 as components
+            components.html(
+                """
+                <style>
+                  #cam-wrap { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #0d1117; border: 1px solid #14b8a6; }
+                  #cam-feed { width: 100%; display: block; border-radius: 12px; }
+                  #cam-label {
+                    position: absolute; top: 10px; left: 10px;
+                    background: rgba(20,184,166,0.15);
+                    border: 1px solid #14b8a6;
+                    color: #14b8a6;
+                    font-size: 0.75rem;
+                    padding: 3px 10px;
+                    border-radius: 20px;
+                    font-family: monospace;
+                    letter-spacing: 1px;
+                  }
+                  #cam-dot {
+                    display: inline-block;
+                    width: 8px; height: 8px;
+                    border-radius: 50%;
+                    background: #ef4444;
+                    margin-right: 6px;
+                    animation: blink 1s infinite;
+                  }
+                  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+                  #cam-err { color: #ef4444; font-size: 0.9rem; padding: 20px; text-align: center; }
+                </style>
+                <div id="cam-wrap">
+                  <video id="cam-feed" autoplay playsinline muted></video>
+                  <div id="cam-label"><span id="cam-dot"></span>LIVE · rPPG ACTIVE</div>
+                </div>
+                <div id="cam-err" style="display:none"></div>
+                <script>
+                  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } })
+                    .then(function(stream) {
+                      var vid = document.getElementById('cam-feed');
+                      vid.srcObject = stream;
+                    })
+                    .catch(function(err) {
+                      document.getElementById('cam-wrap').style.display = 'none';
+                      var errDiv = document.getElementById('cam-err');
+                      errDiv.style.display = 'block';
+                      errDiv.innerHTML = '⚠️ Camera error: ' + err.message + '<br><small>Please allow camera in browser settings and try again.</small>';
+                    });
+                </script>
+                """,
+                height=360,
             )
-            if cam_frame is not None:
-                # Feed raw bytes to rPPG pipeline for processing
-                import cv2
-                import numpy as np
-                from PIL import Image
-                import io
-                img = Image.open(io.BytesIO(cam_frame.getvalue())).convert("RGB")
-                frame_np = np.array(img)
-                # Store in rPPG object for next signal processing pass
-                if hasattr(rppg, 'latest_frame'):
-                    rppg.latest_frame = frame_np
 
     with vitals_col:
         st.markdown("#### Patient Vitals")
