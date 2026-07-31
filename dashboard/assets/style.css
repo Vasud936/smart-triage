@@ -51,44 +51,14 @@ p, span, div {
     line-height: 1.5;
 }
 
-/* Hide Streamlit Clutter — NEVER hide the header element itself! */
+/* Hide Streamlit Clutter — only menu and footer, NEVER touch header */
 #MainMenu { display: none !important; }
 footer { display: none !important; }
 
-/* Hide only the toolbar (deploy button, etc.) inside header */
-header [data-testid="stToolbar"] { display: none !important; }
-header [data-testid="stDecoration"] { display: none !important; }
-header [data-testid="stStatusWidget"] { display: none !important; }
-
-/* Make header itself transparent but VISIBLE (the sidebar arrow lives here or near here) */
-header[data-testid="stHeader"] {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-/* Sidebar collapse/expand button — force white and always visible */
-button[kind="header"],
-[data-testid="collapsedControl"],
-[data-testid="stSidebarCollapseButton"],
-.stSidebar button[kind="header"] {
-    visibility: visible !important;
-    display: flex !important;
-    opacity: 1 !important;
-    z-index: 999999 !important;
-    color: #ffffff !important;
-    background: transparent !important;
-}
-
-button[kind="header"] svg,
-button[kind="header"] svg path,
-[data-testid="collapsedControl"] svg,
-[data-testid="collapsedControl"] svg path,
-[data-testid="stSidebarCollapseButton"] svg,
-[data-testid="stSidebarCollapseButton"] svg path {
+/* Make the sidebar collapse arrow white on dark background */
+[data-testid="stSidebar"] button[kind="header"] svg {
     stroke: #ffffff !important;
     fill: #ffffff !important;
-    color: #ffffff !important;
 }
 
 /* Modern Glassmorphism Cards for Vertical Blocks */
