@@ -52,28 +52,32 @@ p, span, div {
 }
 
 /* Hide Streamlit Clutter Safely */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
+#MainMenu { display: none !important; }
+footer { display: none !important; }
+[data-testid="stToolbar"] { display: none !important; }
 
+/* Keep header in DOM but make it invisible so it doesn't block the UI */
 header {
-    visibility: hidden !important;
     background: transparent !important;
+    box-shadow: none !important;
 }
 
-/* Force the sidebar toggle arrow to be visible even though header is hidden */
-header [data-testid="collapsedControl"],
-[data-testid="collapsedControl"] {
-    visibility: visible !important;
+/* Aggressively target the sidebar expand button to make it WHITE */
+[data-testid="collapsedControl"],
+[data-testid="baseButton-header"] {
     display: flex !important;
+    visibility: visible !important;
     opacity: 1 !important;
-    color: #ffffff !important;
+    z-index: 999999 !important;
 }
 
-/* Ensure the icon itself is white (handles both stroke and fill based SVGs) */
-[data-testid="collapsedControl"] svg,
-[data-testid="collapsedControl"] path {
+[data-testid="collapsedControl"] svg, 
+[data-testid="collapsedControl"] path,
+[data-testid="baseButton-header"] svg,
+[data-testid="baseButton-header"] path {
     stroke: #ffffff !important;
     fill: #ffffff !important;
+    color: #ffffff !important;
 }
 
 /* Modern Glassmorphism Cards for Vertical Blocks */
