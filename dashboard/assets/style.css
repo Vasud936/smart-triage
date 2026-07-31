@@ -53,8 +53,17 @@ p, span, div {
 
 /* Hide Streamlit Clutter */
 #MainMenu {visibility: hidden;}
-header {visibility: hidden;}
+header {background: transparent !important;}
+[data-testid="stToolbar"] {visibility: hidden !important;}
 footer {visibility: hidden;}
+
+/* Make sidebar toggle arrow white and visible */
+[data-testid="collapsedControl"] {
+    color: #ffffff !important;
+}
+[data-testid="collapsedControl"] svg {
+    fill: #ffffff !important;
+}
 
 /* Modern Glassmorphism Cards for Vertical Blocks */
 div[data-testid="stVerticalBlock"] > div.st-emotion-cache-1wmy9hl {
