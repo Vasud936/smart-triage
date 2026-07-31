@@ -28,6 +28,36 @@ def load_css():
     if css_path.exists():
         with open(css_path) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    
+    # JavaScript fallback to guarantee the sidebar toggle arrow is always visible & white
+    st.markdown("""
+    <script>
+    function fixSidebarArrow() {
+        // Target all possible sidebar toggle buttons
+        var selectors = [
+            '[data-testid="collapsedControl"]',
+            '[data-testid="stSidebarCollapseButton"]',
+            'button[kind="header"]'
+        ];
+        selectors.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) {
+                el.style.setProperty('visibility', 'visible', 'important');
+                el.style.setProperty('display', 'flex', 'important');
+                el.style.setProperty('opacity', '1', 'important');
+                el.style.setProperty('z-index', '999999', 'important');
+                el.style.setProperty('color', '#ffffff', 'important');
+                el.querySelectorAll('svg, svg path').forEach(function(svg) {
+                    svg.style.setProperty('stroke', '#ffffff', 'important');
+                    svg.style.setProperty('fill', '#ffffff', 'important');
+                });
+            });
+        });
+    }
+    // Run immediately and also observe DOM changes
+    fixSidebarArrow();
+    setInterval(fixSidebarArrow, 500);
+    </script>
+    """, unsafe_allow_html=True)
 
 def init_pipelines():
     if "predictor" not in st.session_state:

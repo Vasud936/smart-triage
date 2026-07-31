@@ -51,30 +51,41 @@ p, span, div {
     line-height: 1.5;
 }
 
-/* Hide Streamlit Clutter Safely */
+/* Hide Streamlit Clutter — NEVER hide the header element itself! */
 #MainMenu { display: none !important; }
 footer { display: none !important; }
-[data-testid="stToolbar"] { display: none !important; }
 
-/* Keep header in DOM but make it invisible so it doesn't block the UI */
-header {
+/* Hide only the toolbar (deploy button, etc.) inside header */
+header [data-testid="stToolbar"] { display: none !important; }
+header [data-testid="stDecoration"] { display: none !important; }
+header [data-testid="stStatusWidget"] { display: none !important; }
+
+/* Make header itself transparent but VISIBLE (the sidebar arrow lives here or near here) */
+header[data-testid="stHeader"] {
     background: transparent !important;
+    border: none !important;
     box-shadow: none !important;
 }
 
-/* Aggressively target the sidebar expand button to make it WHITE */
+/* Sidebar collapse/expand button — force white and always visible */
+button[kind="header"],
 [data-testid="collapsedControl"],
-[data-testid="baseButton-header"] {
-    display: flex !important;
+[data-testid="stSidebarCollapseButton"],
+.stSidebar button[kind="header"] {
     visibility: visible !important;
+    display: flex !important;
     opacity: 1 !important;
     z-index: 999999 !important;
+    color: #ffffff !important;
+    background: transparent !important;
 }
 
-[data-testid="collapsedControl"] svg, 
-[data-testid="collapsedControl"] path,
-[data-testid="baseButton-header"] svg,
-[data-testid="baseButton-header"] path {
+button[kind="header"] svg,
+button[kind="header"] svg path,
+[data-testid="collapsedControl"] svg,
+[data-testid="collapsedControl"] svg path,
+[data-testid="stSidebarCollapseButton"] svg,
+[data-testid="stSidebarCollapseButton"] svg path {
     stroke: #ffffff !important;
     fill: #ffffff !important;
     color: #ffffff !important;
