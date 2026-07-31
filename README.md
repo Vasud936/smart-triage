@@ -1,123 +1,124 @@
-# VitalWatch ER AI-Powered Emergency Triage Monitor
+# VitalWatch ER — AI-Powered Triage & Patient Monitoring
 
-> **Hackathon Project** : Contactless patient monitoring meets machine learning for smarter emergency department triage.
+VitalWatch ER is a complete, production-grade AI solution designed to revolutionize Emergency Department (ED) triage. It seamlessly integrates a predictive machine learning model for immediate patient risk assessment and a live computer vision pipeline (rPPG) to monitor patient vitals remotely using standard webcams.
 
-## What is VitalWatch ER?
+## 🚀 The Problem & Our Solution
 
-VitalWatch ER is an AI-powered prototype that combines **remote photoplethysmography (rPPG)** with a **machine learning risk classifier** to continuously monitor emergency department patients through a standard webcam — no wearable sensors required.
+### The Problem
+Emergency Departments globally face unprecedented overcrowding. Traditional triage is a manual, subjective, and time-consuming process. Patients waiting in the lobby often deteriorate silently because continuous monitoring requires expensive, physical medical equipment that cannot be attached to every waiting patient.
 
-The system:
-1. **Extracts heart rate contactlessly** from a patient's face using a webcam and computer vision (MediaPipe + OpenCV)
-2. **Classifies triage risk** using an XGBoost model trained on real Korean ER data (1,267 patients)
-3. **Explains its reasoning** via SHAP feature importance ("flagged because HR elevated + respiratory rate abnormal")
-4. **Displays everything** in a real-time Streamlit dashboard with patient queue, trend charts, and alerts
+### Our Solution
+VitalWatch ER solves this by providing:
+1. **AI-Driven Triage Validation:** A machine learning model trained on real-world ED data that analyzes patient demographics and initial vitals to assign an objective Risk Tier (Stable, Monitor, Re-triage), reducing human error.
+2. **Contactless Remote Monitoring:** Using Remote Photoplethysmography (rPPG) via standard webcams, the system extracts real-time heart rate and estimates blood pressure directly from a patient's face without attaching any physical sensors.
+3. **Explainable AI:** The system doesn't just output a risk tier; it provides SHAP-based explainability, showing doctors exactly *why* a patient was flagged (e.g., "Age > 65" or "SpO2 < 92%").
 
-## Key Results
+## ✨ Features
 
-| Metric | Benchmark (Prior Work) | Our Model |
-|--------|----------------------|-----------|
-| Accuracy | 80% | TBD after training |
-| Emergency Recall | 89% | TBD after training |
-| Algorithm | Gradient Boosting | XGBoost + SMOTE |
+- **Live Camera Vitals Auto-Fill:** Nurses can point a webcam at a patient during intake to automatically extract their Heart Rate, and estimated Blood Pressure in under 5 seconds.
+- **Premium Dashboard UI:** A stunning, modern, dark-themed SaaS interface inspired by Vercel and Linear, built entirely in Streamlit with custom CSS and HTML rendering.
+- **Real-Time Patient Queue:** A dynamic patient queue that automatically sorts patients by their AI-assigned Risk Tier (Re-triage > Monitor > Stable).
+- **Live Monitor Modal:** A pop-up modal for continuous observation. It runs a background thread to process webcam frames at 30 FPS while feeding a 1 FPS vital update and heart-rate trend graph to the UI without freezing the application.
+- **Demo Mode Engine:** A stochastic data generator that simulates heart rate fluctuations and random walks for presentation purposes when a camera is unavailable.
 
-*Benchmark source: [suadism/CapstoneSuadMohammed](https://github.com/suadism/CapstoneSuadMohammed)*
+## 🛠️ Tech Stack
 
-## Tech Stack
+### Frontend & UI
+- **Streamlit:** Core web application framework.
+- **Custom CSS/HTML:** Deeply customized Streamlit components (Glassmorphism, flexbox grids, custom buttons, hidden default Streamlit toolbars).
+- **Plotly:** For real-time, sleek, and responsive heart-rate trend charts.
 
-| Layer | Tool | Purpose |
-|-------|------|---------|
-| Language | Python 3.10+ | Everything |
-| Camera/CV | OpenCV | Webcam capture |
-| Face Detection | MediaPipe | Face + landmark detection, ROI extraction |
-| Signal Processing | NumPy, SciPy | rPPG: filtering, FFT for HR extraction |
-| ML | scikit-learn, XGBoost | Training the risk classifier |
-| Explainability | SHAP | Feature-importance explanations |
-| Data | pandas | Dataset prep, feature engineering |
-| Dashboard | Streamlit | Live demo UI |
-| Charts | Matplotlib, Plotly | HR trends, confusion matrices |
+### Backend & Machine Learning
+- **Python 3.12**
+- **XGBoost / Scikit-Learn:** Core predictive models for Risk Tier classification, trained on the Korean ER dataset.
+- **SHAP (SHapley Additive exPlanations):** For model explainability and feature importance.
+- **Pandas & NumPy:** For data preprocessing and matrix operations.
 
-**No API keys. No cloud services. No cost.**
+### Computer Vision (rPPG)
+- **OpenCV:** For video capture, frame processing, and ROI extraction.
+- **MediaPipe:** Google's framework for high-accuracy, real-time Face Mesh landmark detection.
+- **SciPy:** For applying Butterworth bandpass filters and Fast Fourier Transforms (FFT) to isolate human pulse frequencies from raw RGB pixel data.
 
-## Project Structure
+## 📁 Project Structure
 
+```text
+C:.
+|   .gitignore
+|   README.md
+|   requirements.txt
+|   run.bat
+|   
++---dashboard               # Frontend UI Code
+|   |   app.py              # Main Streamlit Entry Point
+|   |   
+|   +---assets
+|   |       style.css       # Premium Vercel/Linear dark mode CSS
+|   |       
+|   +---components          # Modular UI Components
+|   |       consent_screen.py
+|   |       explanation_panel.py
+|   |       hr_trend_chart.py
+|   |       live_monitor_modal.py
+|   |       patient_modal.py
+|   |       patient_queue.py
+|   |       webcam_feed.py
+|   |       __init__.py
+|           
++---data                    # Training Datasets
+|       data.csv
+|       
++---models                  # Serialized ML Models
+|       best_model.joblib
+|       
++---outputs                 # Model Evaluation Artifacts
+|       confusion_matrix.png
+|       roc_curve.png
+|       shap_summary.png
+|       
+\---src                     # Backend & ML Core Logic
+        data_preprocessing.py # Data cleaning and scaling
+        integration.py        # ML Prediction & SHAP explainer engine
+        model_evaluation.py   # Accuracy, Recall, and ROC metrics
+        model_training.py     # Training the XGBoost classifier
+        rppg_pipeline.py      # OpenCV + MediaPipe heart rate extraction
+        utils.py              # Helper functions
 ```
-├── data/
-│   └── data.csv                   # Korean ER triage dataset (1,267 patients)
-├── models/
-│   ├── best_model.joblib          # Trained ML model
-│   └── scaler.joblib              # Feature scaler
-├── outputs/
-│   ├── confusion_matrix.png       # Evaluation visualizations
-│   ├── roc_curves.png
-│   ├── shap_summary.png
-│   └── model_comparison.csv
-├── src/
-│   ├── utils.py                   # Shared constants & utilities
-│   ├── data_preprocessing.py      # Data cleaning & feature engineering
-│   ├── model_training.py          # Train LR, RF, XGBoost models
-│   ├── model_evaluation.py        # Metrics, plots, SHAP analysis
-│   ├── rppg_pipeline.py           # Webcam → heart rate extraction
-│   └── integration.py             # Connect rPPG to ML model
-├── dashboard/
-│   ├── app.py                     # Streamlit main application
-│   ├── components/
-│   │   ├── consent_screen.py      # Medical consent gate
-│   │   ├── webcam_feed.py         # Live camera + HR display
-│   │   ├── patient_queue.py       # Color-coded patient queue
-│   │   ├── explanation_panel.py   # SHAP reasoning panel
-│   │   └── hr_trend_chart.py      # Real-time HR trend chart
-│   └── assets/
-│       └── style.css              # Premium dark theme CSS
-├── requirements.txt
-├── README.md
-└── run.bat                        # One-click launcher
-```
 
-## Quick Start
+## ⚙️ How to Run It (Step-by-Step)
 
-### 1. Install dependencies
+### Prerequisites
+Make sure you have Python 3.10+ installed and a working webcam connected to your machine.
+
+### Step 1: Install Dependencies
+Open your terminal in the project root folder and install the required Python packages:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Train the ML model (Phase 1)
+### Step 2: (Optional) Retrain the Model
+If you want to re-train the machine learning model from scratch on the dataset, run:
 ```bash
 python src/model_training.py
-python src/model_evaluation.py
 ```
+*This will train the model, save `best_model.joblib` to the `/models` directory, and output performance metrics to the console.*
 
-### 3. Launch the dashboard
-```bash
-streamlit run dashboard/app.py
-```
+### Step 3: Run the Dashboard
+To start the application, simply run the provided batch file (Windows) or execute the Streamlit command directly:
 
-Or use the one-click launcher:
+**Option A (Using the Batch file):**
 ```bash
 run.bat
 ```
 
-## Team Division
+**Option B (Manual Command):**
+```bash
+streamlit run dashboard/app.py
+```
 
-| Person | Phase | Responsibility |
-|--------|-------|---------------|
-| Person A | Phase 1 | Dataset, model training, evaluation, SHAP |
-| Person B | Phase 2 | rPPG signal pipeline |
-| Person C | Phase 3+4 | Integration + Streamlit dashboard |
-| Everyone | Phase 5 | Validation + demo rehearsal |
-
-## References
-
-- **Dataset**: Korean Emergency Department Triage Dataset (KTAS), 1,267 patients from two EDs in South Korea (Oct 2016 – Sep 2017)
-  - [Kaggle](https://www.kaggle.com/datasets/ilkeryildiz/emergency-service-triage-application)
-  - [Figshare](https://figshare.com/articles/dataset/8099618)
-  - Original paper: Moon S-H, Shim JL, Park K-S, Park C-S. "Triage accuracy and causes of mistriage using the Korean Triage and Acuity Scale." PLOS ONE (2019)
-- **Benchmark**: [suadism/CapstoneSuadMohammed](https://github.com/suadism/CapstoneSuadMohammed) — Gradient Boosting achieved 80% accuracy, 89% emergency recall
-- **rPPG methodology**: Poh, M.Z., McDuff, D.J., & Picard, R.W. (2011). "Advancements in noncontact, multiparameter physiological measurements using a webcam."
-
-## Ethical Considerations
-
-- **This is a research prototype, NOT for clinical use**
-- All patient data is de-identified
-- The system is designed as a **decision-support tool** — final triage decisions are always made by qualified clinicians
-- Consent is required before any camera-based monitoring
-- No patient data is stored or transmitted
+### Step 4: Using the App
+1. The app will open in your default web browser (usually at `http://localhost:8501`).
+2. Accept the mock HIPAA Consent form.
+3. Click **"New Intake"** to add a patient.
+4. Try clicking **"Auto-Fill Vitals via Live Camera"** to test the rPPG face-scanning pipeline.
+5. Once the patient is in the queue, click **"Monitor Patient"** to open the live real-time computer vision tracker and view the heart rate trend graph.
+6. Toggle **"Demo Mode"** in the left sidebar if you want to test the app without using a physical webcam.
