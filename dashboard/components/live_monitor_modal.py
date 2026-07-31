@@ -93,24 +93,13 @@ def render_live_monitor_modal(patient):
                     st.metric("❤️ Heart Rate",     f"{hr:.1f} BPM")
                     st.metric("🩸 Blood Pressure",  f"{int(sbp)}/{int(dbp)}")
                     st.metric("🫁 SpO2 (Est.)",     f"{int(patient['vitals']['Saturation'])}%")
-                    
-                    # Signal Quality UI
-                    quality = features.get("signal_quality", "Unknown")
-                    q_color = "#22c55e" if "Good" in quality else ("#eab308" if "Fair" in quality else "#ef4444")
-                    st.markdown(f"""
-                    <div style="margin-top: 12px; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid {q_color}40;">
-                        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 4px;">Camera Signal Quality</div>
-                        <div style="color: {q_color}; font-weight: 600; font-size: 0.95rem;">📶 {quality}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
                     # Determine badge class based on risk tier
                     badge_class = "badge-stable"
                     if risk == "Re-triage": badge_class = "badge-retriage"
                     elif risk == "Monitor": badge_class = "badge-monitor"
                     
                     st.markdown(f"""
-                    <div style="margin: 12px 0 20px 0; padding: 16px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);">
+                    <div style="margin: 20px 0; padding: 16px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color);">
                         <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">Current Risk Tier</div>
                         <span class="{badge_class}" style="font-size: 1rem; padding: 6px 14px;">● {risk}</span>
                     </div>

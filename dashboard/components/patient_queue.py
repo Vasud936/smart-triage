@@ -31,20 +31,6 @@ def render_patient_queue():
         if p["risk_tier"] == "Re-triage": badge_class = "badge-retriage"
         elif p["risk_tier"] == "Monitor": badge_class = "badge-monitor"
             
-        # Calculate wait time
-        import time
-        timestamp = p.get("timestamp", time.time())
-        wait_minutes = int((time.time() - timestamp) / 60)
-        
-        wait_text = f"{wait_minutes}m wait"
-        wait_color = "#71717a"
-        if p["risk_tier"] == "Re-triage" and wait_minutes >= 5:
-            wait_color = "#ef4444"
-            wait_text = f"⚠️ {wait_minutes}m wait (Overdue)"
-        elif wait_minutes >= 15:
-            wait_color = "#eab308"
-            wait_text = f"⚠️ {wait_minutes}m wait"
-            
         with st.container(border=True):
             col1, col2, col3 = st.columns([1.5, 2.0, 1.5])
             with col1:
@@ -52,7 +38,7 @@ def render_patient_queue():
                 <div class="queue-name">{p['name']}</div>
                 <div class="queue-meta" style="margin-top: 4px;">ID: {p['id']} • {int(p['age'])} {p['sex'][0]}</div>
                 <div class="queue-meta" style="margin-top: 12px;"><strong>Complaint:</strong> {p['complaint']}</div>
-                <div class="queue-meta" style="font-size: 0.8rem; margin-top: 4px; color: {wait_color}; font-weight: 500;">{wait_text} <span style="color: #71717a; font-weight: 400; font-size: 0.75rem;">(Added: {p['time_added']})</span></div>
+                <div class="queue-meta" style="font-size: 0.75rem; margin-top: 2px; color: #71717a;">Added: {p['time_added']}</div>
                 """, unsafe_allow_html=True)
             with col2:
                 st.markdown(f"""

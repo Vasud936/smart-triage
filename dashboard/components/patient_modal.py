@@ -100,7 +100,6 @@ def render_patient_modal(patient=None):
         
         patient_id = patient["id"] if is_edit else f"PT-{str(uuid.uuid4())[:6].upper()}"
         time_added = patient["time_added"] if is_edit else datetime.datetime.now().strftime("%I:%M %p")
-        timestamp = patient.get("timestamp", time.time()) if is_edit else time.time()
         
         new_record = {
             "id": patient_id,
@@ -111,8 +110,7 @@ def render_patient_modal(patient=None):
             "vitals": features,
             "risk_tier": prediction["risk_tier"],
             "color": prediction["color_code"],
-            "time_added": time_added,
-            "timestamp": timestamp
+            "time_added": time_added
         }
         
         if is_edit:
