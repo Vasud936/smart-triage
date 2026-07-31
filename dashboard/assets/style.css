@@ -51,17 +51,28 @@ p, span, div {
     line-height: 1.5;
 }
 
-/* Hide Streamlit Clutter */
+/* Hide Streamlit Clutter Safely */
 #MainMenu {visibility: hidden;}
-header {background: transparent !important;}
-[data-testid="stToolbar"] {visibility: hidden !important;}
 footer {visibility: hidden;}
 
-/* Make sidebar toggle arrow white and visible */
+header {
+    visibility: hidden !important;
+    background: transparent !important;
+}
+
+/* Force the sidebar toggle arrow to be visible even though header is hidden */
+header [data-testid="collapsedControl"],
 [data-testid="collapsedControl"] {
+    visibility: visible !important;
+    display: flex !important;
+    opacity: 1 !important;
     color: #ffffff !important;
 }
-[data-testid="collapsedControl"] svg {
+
+/* Ensure the icon itself is white (handles both stroke and fill based SVGs) */
+[data-testid="collapsedControl"] svg,
+[data-testid="collapsedControl"] path {
+    stroke: #ffffff !important;
     fill: #ffffff !important;
 }
 
