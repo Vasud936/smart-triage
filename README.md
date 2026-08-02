@@ -2,7 +2,7 @@
 
 VitalWatch ER is a complete, production-grade AI solution designed to revolutionize Emergency Department (ED) triage. It seamlessly integrates a predictive machine learning model for immediate patient risk assessment and a live computer vision pipeline (rPPG) to monitor patient vitals remotely using standard webcams.
 
-## 🚀 The Problem & Our Solution
+## The Problem & Our Solution
 
 ### The Problem
 Emergency Departments globally face unprecedented overcrowding. Traditional triage is a manual, subjective, and time-consuming process. Patients waiting in the lobby often deteriorate silently because continuous monitoring requires expensive, physical medical equipment that cannot be attached to every waiting patient.
@@ -13,7 +13,7 @@ VitalWatch ER solves this by providing:
 2. **Contactless Remote Monitoring:** Using Remote Photoplethysmography (rPPG) via standard webcams, the system extracts real-time heart rate and estimates blood pressure directly from a patient's face without attaching any physical sensors.
 3. **Explainable AI:** The system doesn't just output a risk tier; it provides SHAP-based explainability, showing doctors exactly *why* a patient was flagged (e.g., "Age > 65" or "SpO2 < 92%").
 
-## ✨ Features
+## Features
 
 - **Live Camera Vitals Auto-Fill:** Nurses can point a webcam at a patient during intake to automatically extract their Heart Rate, and estimated Blood Pressure in under 5 seconds.
 - **Premium Dashboard UI:** A stunning, modern, dark-themed SaaS interface inspired by Vercel and Linear, built entirely in Streamlit with custom CSS and HTML rendering.
@@ -21,7 +21,7 @@ VitalWatch ER solves this by providing:
 - **Live Monitor Modal:** A pop-up modal for continuous observation. It runs a background thread to process webcam frames at 30 FPS while feeding a 1 FPS vital update and heart-rate trend graph to the UI without freezing the application.
 - **Demo Mode Engine:** A stochastic data generator that simulates heart rate fluctuations and random walks for presentation purposes when a camera is unavailable.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend & UI
 - **Streamlit:** Core web application framework.
@@ -39,7 +39,7 @@ VitalWatch ER solves this by providing:
 - **MediaPipe:** Google's framework for high-accuracy, real-time Face Mesh landmark detection.
 - **SciPy:** For applying Butterworth bandpass filters and Fast Fourier Transforms (FFT) to isolate human pulse frequencies from raw RGB pixel data.
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 C:.
@@ -84,7 +84,7 @@ C:.
         utils.py              # Helper functions
 ```
 
-## ⚙️ How to Run It (Step-by-Step)
+## How to Run It (Step-by-Step)
 
 ### Prerequisites
 Make sure you have Python 3.10+ installed and a working webcam connected to your machine.
